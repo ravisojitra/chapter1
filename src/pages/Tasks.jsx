@@ -1,41 +1,8 @@
 import React, { useState } from "react";
+import useTasks from "../hooks/useTasks";
 function TasksList() {
-  const [tasks, setTasks] = useState([]);
 
-  React.useEffect(() => {
-    const tasksAsString = localStorage.getItem("tasks");
-    const tasks = JSON.parse(tasksAsString) || [];
-    setTasks(tasks)
-  }, [])
-
-  function handleTaskStatus(task) {
-    console.log(task);
-    const newTaskData = {
-      ...task,
-      taskStatus: !task.taskStatus
-    }
-    const tasksAsString = localStorage.getItem("tasks");
-    const tasks = JSON.parse(tasksAsString) || [];
-    const updatedTasks = tasks.map(t => {
-      if (t.id === task.id) {
-        return newTaskData
-      }
-      return t;
-    });
-    localStorage.setItem("tasks", JSON.stringify(updatedTasks))
-    setTasks(updatedTasks)
-  }
-
-  function handleTaskRemove(task) {
-    const taskId = task.id;
-    const tasksAsString = localStorage.getItem("tasks");
-    const tasks = JSON.parse(tasksAsString) || [];
-
-    const filteredTasks = tasks.filter(t => t.id !== task.id);
-    localStorage.setItem("tasks", JSON.stringify(filteredTasks));
-    setTasks(filteredTasks)
-
-  }
+  const { tasks, changeTaskStatus, removeTask } = useTasks();
 
   if (tasks.length <= 0) {
     return <p>No tasks are added</p>
@@ -46,7 +13,7 @@ function TasksList() {
         tasks.map(task => {
           return (
             <>
-              <span onClick={() => handleTaskStatus(task)}>{task.taskName}</span> - <span>{task.taskStatus ? "completed" : "Not Completed"}</span> <span onClick={() => handleTaskRemove(task)}>X</span>
+              <span className="cursor-pointer" onClick={() => changeTaskStatus(task.id)}>{task.taskName}</span> - <span>{task.taskStatus ? "completed" : "Not Completed"}</span> <span onClick={() => removeTask(task.id)}>X</span>
               <br />
             </>
           )
@@ -60,20 +27,15 @@ function AddTaskForm() {
   const [taskName, setTaskName] = React.useState("")
   const [taskStatus, setTaskStatus] = React.useState(false);
 
-  function addTask(event) {
+  const { addTask } = useTasks()
+
+  function addTaskEvent(event) {
     event.preventDefault();
-    const tasksAsString = localStorage.getItem("tasks");
-    const tasks = JSON.parse(tasksAsString) || [];
-    const taskData = {
-      taskName,
-      taskStatus,
-      id: tasks.length + 1
-    }
-    tasks.push(taskData)
-    localStorage.setItem("tasks", JSON.stringify(tasks))
+    addTask(taskName, taskStatus)
   }
+
   return (
-    <form onSubmit={event => addTask(event)}>
+    <form onSubmit={event => addTaskEvent(event)}>
       <input value={taskName} onChange={event => setTaskName(event.target.value)} type="text" name="taskName" id="taskName" placeholder="task name" />
       <br />
       <>
