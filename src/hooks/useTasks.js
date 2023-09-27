@@ -1,4 +1,6 @@
 import React from "react";
+import { v4 } from "uuid";
+
 function getTasksData() {
   const tasksAsString = localStorage.getItem("tasks");
   return JSON.parse(tasksAsString) || [];
@@ -18,7 +20,7 @@ export default function useTasks() {
     const taskData = {
       taskName,
       taskStatus,
-      id: localTasks.length + 1,
+      id: v4(),
     };
     localTasks.push(taskData);
     localStorage.setItem("tasks", JSON.stringify(localTasks));

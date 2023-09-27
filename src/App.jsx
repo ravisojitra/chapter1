@@ -5,9 +5,7 @@ import './App.css'
 function App() {
 
   return (
-    <>
-      <Tasks />
-    </>
+    <Tasks />
   )
 }
 
